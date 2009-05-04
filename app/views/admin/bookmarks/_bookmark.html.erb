@@ -1,0 +1,8 @@
+<tr id="admin_bookmark_<%= bookmark.id %>">
+  <td class="cntr left-edge"><%= bookmark.id %></td>
+  <td><%= h(bookmark.name) %></td>
+  <td><%= link_to bookmark.url, bookmark.url %></td>
+  <td><%= bookmark.created_at.strftime("%d %b %Y %I:%M%p") %></td>
+  <td class="cntr"><%= link_to image_tag("/images/icon_edit_10.png", :size => "10x10", :class => 'admin-icon'), url(:edit_admin_bookmark, bookmark), { :title => 'Edit this post.' } %>
+  <td class="cntr right-edge"><%= link_to image_tag("/images/icon_delete_10.png", :size => "10x10", :class => 'admin-icon'), url(:delete_admin_bookmark, bookmark), { :title => 'Delete this bookmark.', :onclick => "return confirm('Are you sure you want to delete this bookmark?')", :method => :delete } %>
+</tr>

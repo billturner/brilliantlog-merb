@@ -1,0 +1,23 @@
+<h2 class="admin-header">All Bookmarks</h2>
+
+<table class="admin">
+  <tr>
+    <th class="cntr">ID</th>
+    <th>Name</th>
+    <th>URL</th>
+    <th>Date Added</th>
+    <th></th>
+    <th></th>
+  </tr>
+  <%= partial(:bookmark, :with => @bookmarks) %>
+</table>
+
+<%= paginate(
+  @current_page, 
+  @page_count, 
+  :default_css => false, 
+  :outer_window => 5, 
+  :next_label => "Next &raquo;", 
+  :prev_label => "&laquo; Previous"
+  )
+%>

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>The weblog, writing, whatever of Bill Turner | Brilliant Corners</title>
+    <link>http://brilliantcorners.org/</link>
+    <description>Weblog of a freelance web application developer in Pittsburgh, PA</description>
+    <copyright>Copyright (c) Bill Turner</copyright>
+    <language>en-US</language>
+    <pubDate>Fri, 23 Jan 2009 21:41:25 -0500</pubDate>
+    <lastBuildDate>Fri, 23 Jan 2009 21:41:25 -0500</lastBuildDate>
+    <item>
+      <title>I think I fixed it</title>
+      <description>&lt;p&gt;Well, will this correct the problems?&lt;/p&gt;
+</description>
+      <pubDate>Fri, 23 Jan 2009 21:41:25 -0500</pubDate>
+      <link>http://localhost:4000/nodes/149-i-think-i-fixed-it</link>
+      <guid isPermaLink="false">149@http://localhost:4000/</guid>
+        <category>test</category>
+        <category>site news</category>
+        <category>merb</category>
+    </item>
+    <item>
+      <title>Another new post</title>
+      <description>&lt;p&gt;This is a test&lt;/p&gt;
+</description>
+      <pubDate>Fri, 23 Jan 2009 21:38:37 -0500</pubDate>
+      <link>http://localhost:4000/nodes/147-another-new-post</link>
+      <guid isPermaLink="false">147@http://localhost:4000/</guid>
+        <category>is</category>
+        <category>it</category>
+        <category>a dumb</category>
+        <category>thing</category>
+    </item>
+    <item>
+      <title>Getting has_many :through working with Datamapper</title>
+      <description>&lt;p&gt;&lt;a href=&quot;http://datamapper.org/&quot; title=&quot;The Datamapper homepage/wiki.&quot;&gt;Datamapper&lt;/a&gt; is a great little ORM, but it&amp;rsquo;s still not quite finished yet (as of this post, anyway). This app was initially using &lt;a href=&quot;http://ar.rubyonrails.com/&quot; title=&quot;A webpage detailing the ActiveRecord API that isn&amp;rsquo;t Rails-specific.&quot;&gt;ActiveRecord&lt;/a&gt; with &lt;a href=&quot;http://merbivore.com/&quot; title=&quot;The Merb framework homepage.&quot;&gt;Merb&lt;/a&gt;, but with release of the 1.0.x branch of Merb, I thought I'd give Datamapper another try. So far, I'm both happy &lt;em&gt;and&lt;/em&gt; not happy about the decision. I'm happy, because I like the way &lt;a href=&quot;http://datamapper.org/doku.php?id=docs:finders&quot; title=&quot;The finder methods page on the Datamapper wiki.&quot;&gt;the finder methods work&lt;/a&gt;, and how relationships are created automagically, without having to futz with as much code. But then I'm unhappy with how unfinished it seems, and this makes me curious why the Merb team sets it up as the default ORM when creating a new project.&lt;/p&gt;
+
+&lt;p&gt;Anyway, I was trying to figure out the best way to implement tagging posts for this weblog and my (in need of an update) professional site. &lt;/p&gt;
+
+&lt;p&gt;The &lt;a href=&quot;http://datamapper.org/doku.php?id=docs:associations#adding_to_associations&quot; title=&quot;The Datamapper documentation section on adding to associations&quot;&gt;Datamapper docs&lt;/a&gt; say you should be able to do it this way:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@post = Post.get(1)
+
+# append it to the existing tags with some pseudocode
+tags.each do |tag|
+  @post.tags &amp;lt;&amp;lt; tag
+end
+
+# and save
+@post.save
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;But, if you try something like that, you&amp;rsquo;ll get an &amp;ldquo;Immutable Association Error&amp;rdquo; or something about a &amp;ldquo;frozen array.&amp;rdquo; &lt;a href=&quot;http://datamapper.lighthouseapp.com/projects/20609/tickets/485-has-n-through-does-not-allow-saving-of-model&quot; title=&quot;The bug in question at the Datamapper bug tracker.&quot;&gt;The problem is described in this ticket&lt;/a&gt; at the Datamapper bug tracker. &lt;/p&gt;
+
+&lt;p&gt;Here&amp;rsquo;s what&amp;rsquo;s in my &lt;code&gt;post.rb&lt;/code&gt; model file (Well, not everything; just the important bits):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Post
+  include DataMapper::Resource
+
+  # Set up taglist for editing
+  # * Not a column in 'posts' table
+  # * Shown on edit form as a text_field for free entering of tags
+  attr_accessor :taglist
+
+  # relationships
+  has n, :taggings
+  has n, :posts, :through =&amp;gt; :taggings
+
+  # Callbacks
+  after :create, :assign_tags
+  after :update, :update_tags
+
+  private
+
+    # Set up initial tags on creation
+    def assign_tags
+      self.taglist.split(',').collect {|t| t.strip}.uniq.each do |tag|
+        thistag = Tag.first_or_create(:name =&amp;gt; tag.downcase)
+        Tagging.create(:post_id =&amp;gt; self.id, :tag_id =&amp;gt; thistag.id)
+      end
+    end
+
+    # Wipe out and then add the tags again
+    def update_tags
+      self.taggings.each { |tagging| tagging.destroy }
+      self.taggings.reload
+      self.taglist.split(',').collect {|t| t.strip}.uniq.each do |tag|
+        thistag = Tag.first_or_create(:name =&amp;gt; tag.downcase)
+        Tagging.create(:post_id =&amp;gt; self.id, :tag_id =&amp;gt; thistag.id)
+      end
+    end
+
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As long as I have a taglist field defined in the admin form it will save or update the tags when I add or edit a weblog post. Here&amp;rsquo;s how I have it in the view:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;%= text_field :taglist, :size =&amp;gt; 50, :value =&amp;gt; @post.tags.map{ |tag| tag.name }.join(&quot;, &quot;) %&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, this may not be the most elegant way to make tagging work, but it works for me, and hopefully this may come in handy for anyone else trying to get this kind of a &lt;code&gt;has_many :through&lt;/code&gt; relationship working.&lt;/p&gt;
+</description>
+      <pubDate>Fri, 23 Jan 2009 21:36:21 -0500</pubDate>
+      <link>http://localhost:4000/nodes/146-getting-has-many-through-working-with-datamapper</link>
+      <guid isPermaLink="false">146@http://localhost:4000/</guid>
+    </item>
+    <item>
+      <title>Tumbling</title>
+      <description>&lt;p&gt;I think I'm going to abandon trying to keep the &lt;a href=&quot;http://brilliantcorners.org/tags/inspiration&quot; title=&quot;Most of the art inspiration posts&quot;&gt;art inspiration posts&lt;/a&gt; here on this weblog. It&amp;rsquo;s sometimes more time-consuming than I wanted it to be. So, I'm moving the inspiration posts to &lt;a href=&quot;http://tumblr.com/&quot; title=&quot;The Tumblr home page&quot;&gt;Tumblr&lt;/a&gt;. Now, you can get your wonderful and inspiring art at &lt;a href=&quot;http://billturner.tumblr.com/&quot; title=&quot;My own Tumblr blog&quot;&gt;http://billturner.tumblr.com/&lt;/a&gt;. &lt;/p&gt;
+
+&lt;p&gt;I think I&amp;rsquo;ll eventually roll those posts into the RSS feed here, but until then those art posts will live there, and there adsfdsfdslone. Also, I'm really digging the Tumblr interface, so I&amp;rsquo;ll probably have something more to say on that at a later date.&lt;/p&gt;
+
+&lt;p&gt;Would you look at athat? And again to see?&lt;/p&gt;
+</description>
+      <pubDate>Thu, 13 Nov 2008 21:51:53 -0500</pubDate>
+      <link>http://localhost:4000/nodes/145-tumbling</link>
+      <guid isPermaLink="false">145@http://localhost:4000/</guid>
+        <category>art</category>
+        <category>inspiration</category>
+        <category>tumblr</category>
+    </item>
+    <item>
+      <title>THE PROJECT: Language? Framework?</title>
+      <description>&lt;p&gt;One of the first things I need to determine about &lt;a href=&quot;http://brilliantcorners.org/nodes/141-introducing-the-project&quot; title=&quot;My introduction to THE PROJECT&quot;&gt;THE PROJECT&lt;/a&gt; is what I&amp;rsquo;ll build the application with. I'm positive I&amp;rsquo;ll take advantage of one of the frameworks (like Ruby on Rails or CakePHP) to build the application, but I need to nail down which language I&amp;rsquo;ll use. There are many many choices out there on what language to use, but for me there are only two I&amp;rsquo;ll choose from: PHP or Ruby. But, which one? I've done quite a bit of work with both, although less with PHP. Let&amp;rsquo;s see the options:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Ruby&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;For the last three years, most of the work I've done has been with Ruby, either with &lt;a href=&quot;http://www.rubyonrails.com/&quot; title=&quot;The Ruby on Rails Framework home page&quot;&gt;Rails&lt;/a&gt; or, more recently, &lt;a href=&quot;http://www.merbivore.com/&quot; title=&quot;The Merb framework home page&quot;&gt;Merb&lt;/a&gt;. I grow more comfortable with Ruby every day and I still have fun learning new tricks. This had been pretty much restricted to Rails up until I gave Merb a try a few months ago. I rewrote this weblog with Merb and I had a good time teaching myself something new. Yes, there are many, many similarities between Rails and Merb, but I think there are some things that Merb does better (and easier). Rails, on the other hand, is a little more robust and has a larger community behind it. It &lt;em&gt;could&lt;/em&gt; be easier to do what I want to (in the scope of this project) with Rails, as opposed to Merb.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;PHP&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;In the last year, I've built a few web apps using the &lt;a href=&quot;http://www.cakephp.org/&quot; title=&quot;The CakePHP framework home page&quot;&gt;CakePHP&lt;/a&gt; framework, and I found it quite a nice change of pace to work with. Since I had a strong Rails background, CakePHP was easy to pick up since they certainly had Rails in mind when putting the framework together. However, if I went with PHP, I'm not sure I'd go with CakePHP. I've heard many good things about another framework, &lt;a href=&quot;http://codeigniter.com/&quot; title=&quot;The CodeIgniter framework home page&quot;&gt;CodeIgniter&lt;/a&gt;, and I'm eager to try it. There&amp;rsquo;s nothing that particular bugged me about CakePHP, but CodeIgniter has a reputation as being a little faster, but it may not have a community as big as CakePHP&amp;rsquo;s backing it up, or as many places to look for code examples.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;The Decision&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;So, what will it be? First of all, I think I can narrow it down to using Ruby instead of PHP. PHP is more widely supported (and easier to deploy, etc., etc.), but I think my day-to-day experience leans me more towards Ruby. I'm just more comfortable with Ruby than I am with PHP. I do want to use the CodeIgniter framework for something in the future (and I think I &lt;em&gt;may&lt;/em&gt; already know what that is), but I just don&amp;rsquo;t think it&amp;rsquo;s quite right for this project.&lt;/p&gt;
+
+&lt;p&gt;That leaves me with the Ruby language, but which of the frameworks? Merb is just about to reach the big 1.0 milestone, but while Merb may be ready, I'm not sure I'm ready to build something big on the framework. It&amp;rsquo;s still young and with many fairly drastic changes in the API the last few months, there&amp;rsquo;s not a whole lot out there in the way of documentation and sample apps and code. In the few years I've been working with Ruby on Rails, the community has exploded with plugins for just about everything, tons of sample code, and a growing reference library (thanks to the Rails-related weblogs and numerous tutorials). I know Rails is up to the task, and that it can handle all that I'm wanting to do (and more).&lt;/p&gt;
+
+&lt;p&gt;In my mind, that settles it: I&amp;rsquo;ll use Ruby on Rails.&lt;/p&gt;
+</description>
+      <pubDate>Sat, 01 Nov 2008 00:58:12 -0400</pubDate>
+      <link>http://localhost:4000/nodes/144-the-project-language-framework</link>
+      <guid isPermaLink="false">144@http://localhost:4000/</guid>
+        <category>ruby</category>
+        <category>php</category>
+        <category>rails</category>
+        <category>merb</category>
+        <category>theproject</category>
+        <category>planning</category>
+    </item>
+    <item>
+      <title>Some ideas are good. Some are bad.</title>
+      <description>&lt;p&gt;&lt;a href=&quot;http://www.jilliantamaki.com/sketchbook/2008/10/idea-generation.html&quot; title=&quot;Some great tips whether you&amp;rsquo;re talking about art or anything creative.&quot;&gt;Jillian Tamaki on idea generation&lt;/a&gt;: &lt;em&gt;Plunking yourself down in front of a pad of paper and scraping the inside of your brain is probably not the most effective way of generating ideas.&lt;/em&gt; &lt;/p&gt;
+</description>
+      <pubDate>Thu, 23 Oct 2008 11:03:44 -0400</pubDate>
+      <link>http://localhost:4000/nodes/143-some-ideas-are-good-some-are-bad</link>
+      <guid isPermaLink="false">143@http://localhost:4000/</guid>
+        <category>inspiration</category>
+        <category>creativity</category>
+    </item>
+    <item>
+      <title>Written in David's Journal</title>
+      <description>&lt;p&gt;&lt;em&gt;&amp;ldquo;&lt;a href=&quot;http://www.writeinmyjournal.com/&quot; title=&quot;Some touching and surprising stories told by strangers&quot;&gt;I simply ask people to write in my journal&lt;/a&gt;. What they write is up to them.&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
+</description>
+      <pubDate>Tue, 07 Oct 2008 22:04:40 -0400</pubDate>
+      <link>http://localhost:4000/nodes/142-written-in-david-s-journal</link>
+      <guid isPermaLink="false">142@http://localhost:4000/</guid>
+        <category>writing</category>
+        <category>inspiration</category>
+    </item>
+    <item>
+      <title>Introducing THE PROJECT</title>
+      <description>&lt;p&gt;I've had the idea for this web application for over a year now, but haven&amp;rsquo;t done much with it. Well, I take that back. I started and stopped it about three or four times, but I always stalled on some small detail or became distracted by something else. This time I'm going to do quite a bit more planning up front to avoid the traps I fell into in the past. I also thought I'd post about my progress here on the weblog. Hopefully, this exercise will help me organize my thoughts and ideas.&lt;/p&gt;
+
+&lt;p&gt;The last big web application project I built was Lists of Bests (&lt;a href=&quot;http://web.archive.org/web/20060209030438/http://listsofbests.com/&quot; title=&quot;my version of listsofbests.com saved forever(?) thanks to the Internet Archive&quot;&gt;archive of my version&lt;/a&gt;, &lt;a href=&quot;http://listsofbests.com/&quot; title=&quot;listsofbests.com is now managed by the Robot Co-op&quot;&gt;current version&lt;/a&gt;), but it&amp;rsquo;s been two years since I sold the site to &lt;a href=&quot;http://blog.robotcoop.com/&quot; title=&quot;A fine bunch of coders!&quot;&gt;The Robot Co-op&lt;/a&gt;. I haven&amp;rsquo;t done anything of note since then. Well, I &lt;em&gt;could&lt;/em&gt; mention the intranet app I work on for a small Dallas-based company, but no one outside of the company will ever see it, so that one doesn&amp;rsquo;t count (even though it is pretty awesome). It&amp;rsquo;s now well past time for me to start up something new, and the fact that I have the idea, that&amp;rsquo;s all for the better. I will say that the idea behind THE PROJECT isn&amp;rsquo;t an entirely new idea, but my plans are to make a good idea even better. We&amp;rsquo;ll see if I can deliver on that!&lt;/p&gt;
+
+&lt;p&gt;I plan on covering much of the progress of the application while I'm working through it: technology used; layout decisions; administrivia; and everything else. However, I will keep the actual focus of the web application secret until I get a little further along in the process, although some clues may surface throughout the series of posts. The next couple of posts will cover more general ideas and questions, before I start writing any code at all. Then I&amp;rsquo;ll get into the meat of building the full-on web application. So stay tuned!&lt;/p&gt;
+
+&lt;p&gt;As a final note, a bit of inspiration for putting this series together goes to &lt;a href=&quot;http://garrettdimon.com/&quot; title=&quot;I love Garrett&amp;rsquo;s mimimal design&quot;&gt;Garrett Dimon&lt;/a&gt; and the &lt;a href=&quot;http://www.nextupdate.com/blog/&quot;&gt;blogging he&amp;rsquo;s been doing&lt;/a&gt; while building his app &lt;a href=&quot;http://sifterapp.com/&quot; title=&quot;The Sifter homepage (currently in closed beta)&quot;&gt;Sifter&lt;/a&gt;.&lt;/p&gt;
+</description>
+      <pubDate>Tue, 30 Sep 2008 18:30:55 -0400</pubDate>
+      <link>http://localhost:4000/nodes/141-introducing-the-project</link>
+      <guid isPermaLink="false">141@http://localhost:4000/</guid>
+        <category>development</category>
+        <category>theproject</category>
+        <category>planning</category>
+    </item>
+    <item>
+      <title>The concert system isn't broken at all</title>
+      <description>&lt;p&gt;While I kind of agree with &lt;a href=&quot;http://log.maniacalrage.net/post/51019447/the-concert-system-is-as-far-as-im-concerned&quot;&gt;a few of Garrett Murray&amp;rsquo;s criticisms of music concerts&lt;/a&gt;, most of them leave me scratching my head.&lt;/p&gt;
+
+&lt;p&gt;His first couple of points on Ticketmaster (#1) and exorbitant fees on tickets (#2) is pretty spot on. Unless another big ticket vendor comes into the action, there&amp;rsquo;s not much we&amp;rsquo;ll be able to do about the ridiculous fees that Ticketmaster (and sometimes even smaller ticket vendors) charge. Luckily, in many cases there are alternatives. Unless you&amp;rsquo;re going to a show at a large arena, you may be able to buy your tickets at the venue in advance without having to pay fees. Some venues will have deals with local record shops where tickets can be purchased, but then you will likely pay a fee, but a fee much smaller than Ticketmaster charges.&lt;/p&gt;
+
+&lt;p&gt;He does have a bit of a point about credit cards (#3), but maybe from going to so many shows before debit cards were so common, I think it&amp;rsquo;s a habit to stop at an ATM before a show to make sure I have pocket money for drinks or the occasional tour t-shirt. And unless it says it&amp;rsquo;s an &amp;ldquo;All Ages Show&amp;rdquo; then I think it&amp;rsquo;s pretty safe to ignore the suggested show times on tickets (#4). Ticketmaster is more interested in making sure their fees are collected, than getting all the information on the ticket correct. If you really need to make sure, call the venue ahead of time and they will probably be able to tell you the correct time the bands start.&lt;/p&gt;
+
+&lt;p&gt;That&amp;rsquo;s about where he loses me with his arguments. I can&amp;rsquo;t imagine having every concert having assigned seating (#5). It&amp;rsquo;s certainly not essential, and depending on the band playing, almost inappropriate. In 21 years and over 125 concerts, there have been maybe a handful of exceptions where I wish I was sitting instead of standing. I can&amp;rsquo;t imagine a better way to see a show than standing among the other fans, being able to shift position around the floor while trying to find the best sound in the venue. You have the freedom to get close enough to have your ears sting or far enough away that you can still enjoy the music without it pounding your ears. Not having that freedom would drive me crazy if every venue and every concert had seating.&lt;/p&gt;
+
+&lt;p&gt;To add another point to the seating issue, if you've ever been on the other side (on stage, that is) having an audience that&amp;rsquo;s seated is a &lt;em&gt;whole&lt;/em&gt; different ballgame than having a moving (even if they&amp;rsquo;re just swaying) mass of people. In one case, you have to provide all the energy in the place, while with an active audience you can definitely feed off of their energy and emotions. It can really be a night and day difference when you&amp;rsquo;re performing on stage. Having a standing and engaged audience right in front of you can turn a good show into a fantastic one.&lt;/p&gt;
+
+&lt;p&gt;And while I'm not much of a fan of the overeager concert-goer singing at the top of their lungs (#6), with a standing room only show, you can easily move somewhere else on the floor, not to be bothered. Same with the dancing (or moshing or whatever). If it bothers you that much, you can move back or to the side or wherever. More than likely, the sound in the club is loud enough, that no matter where you&amp;rsquo;re standing, you&amp;rsquo;ll be able to hear just fine. Now, if every single show had assigned seating&amp;mdash;like Garrett proposes&amp;mdash;what would you do then? You'd be stuck next to the super fan. ;&amp;ndash;)&lt;/p&gt;
+
+&lt;p&gt;I don&amp;rsquo;t think that &amp;ldquo;we as concert goers have let it get this out of hand.&amp;rdquo; I'm pretty sure that shows have been going on like this since before the both of us were even born.&lt;/p&gt;
+</description>
+      <pubDate>Mon, 22 Sep 2008 10:21:30 -0400</pubDate>
+      <link>http://localhost:4000/nodes/140-the-concert-system-isn-t-broken-at-all</link>
+      <guid isPermaLink="false">140@http://localhost:4000/</guid>
+        <category>music</category>
+        <category>concerts</category>
+    </item>
+    <item>
+      <title>Natasha's Story</title>
+      <description>&lt;p&gt;&lt;em&gt;Photographer Rick Smolan &lt;a href=&quot;http://www.ted.com/index.php/talks/rick_smolan_tells_the_story_of_a_girl.html&quot;&gt;tells the unforgettable story&lt;/a&gt; of a young Amerasian girl, a fateful photograph, and an adoption saga with a twist.&lt;/em&gt;&lt;/p&gt;
+</description>
+      <pubDate>Sat, 20 Sep 2008 15:45:22 -0400</pubDate>
+      <link>http://localhost:4000/nodes/139-natasha-s-story</link>
+      <guid isPermaLink="false">139@http://localhost:4000/</guid>
+        <category>photography</category>
+    </item>
+  </channel>
+</rss>

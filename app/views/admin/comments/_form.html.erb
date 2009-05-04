@@ -1,0 +1,34 @@
+<p>
+  <%= label 'Name', :for => "comment_name" %><br />
+  <%= text_field :name, :size => 50 %>
+</p>
+<p>
+  <%= label 'Email', :for => "comment_email" %><br />
+  <%= text_field :email, :size => 50 %>
+</p>
+<p>
+  <%= label 'Url', :for => "comment_url" %><br />
+  <%= text_field :url, :size => 50 %>
+</p>
+<p>
+  <%= label 'Comment Body', :for => "comment_comment" %><br />
+  <%= text_area :comment, :cols => 55, :rows => 15 %>
+</p>
+<p>
+  <%= label 'Spam?', :for => "comment_spam" %> <%= check_box :spam %>
+</p>
+<p>
+  <%= label 'Approved?', :for => "comment_approved" %> <%= check_box :approved %>
+</p>
+<% if params[:action] == 'edit' -%>
+<p>
+  <strong>IP Address:</strong> <%= @comment.ip %>
+</p>
+<p>
+  <strong>User Agent:</strong> <%= @comment.user_agent %>
+</p>
+<p>
+  <strong>Referrer:</strong> <%= @comment.referer %>
+</p>
+
+<% end -%>

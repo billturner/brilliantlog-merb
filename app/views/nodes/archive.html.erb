@@ -1,0 +1,60 @@
+<h2 class="archive">All Archived Posts</h2>
+<div id="node_archive">
+<% 
+  this_year = ''
+  last_year = ''
+  this_month = ''
+  last_month = ''
+  month_entries = Array.new
+  @nodes.each do |n|
+    # Get the current year
+    this_year = n.published_at.strftime("%Y")
+    # See if it matches what we had before
+    if this_year != last_year
+      
+      if month_entries.length > 0
+-%>
+  <dd><%= month_entries.join(" / ") %></dd>
+<%
+        month_entries.clear
+      end
+      # If this isn't the first iteration, let's add a closing </dl>
+      if last_year != ''
+        # First, clear out the month counter
+        last_month = ''
+-%>
+</dl>
+<%
+      end
+      # Now, we're still with a new year that doesn't match the last
+      # print out the year separator
+-%>
+<h3><%= n.published_at.strftime("%Y") %></h3>
+<dl>
+<%
+    end
+    # We've printed the year header, let's see about the month one
+    this_month = n.published_at.strftime("%B")
+    # See if it matches the last month
+    if this_month != last_month
+      # See if we need to add the closing
+      if last_month != ''
+-%>
+  <dd><%= month_entries.join(" / ") %></dd>
+<%
+        month_entries.clear
+      end
+-%>
+  <dt><%= this_month %></dt>
+<%
+    end
+    
+    month_entries << [n.published_at.strftime("%d"), link_to(n.title, url(:node, n), { :title => 'View this entry', :rel => 'bookmark' })].join('. ')
+
+    last_year = this_year
+    last_month = this_month
+  end 
+-%>
+  <dd><%= month_entries.join(" / ") %></dd>
+</dl>
+</div>

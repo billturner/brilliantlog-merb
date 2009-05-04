@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+  <head>
+    <title><% if (thrown_content? :title ) then -%><%= h(catch_content(:title)) %> | <% end -%> ADMIN | Weblog Name</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <%= js_include_tag 'jquery', 'jquery-ui', 'application' %>
+    <%= css_include_tag 'site', 'admin' %>
+    <meta name="robots" content="index, follow" />
+  </head>
+  <body id="doc2" class="yui-t6">
+
+    <div id="hd">
+      
+      <h1><%= link_to "<span>Weblog Name</span>", url(:home), { :rel => 'home bookmark', :title => ''} %></h1>
+      
+    </div>
+
+    <div id="bd">
+      
+      <div id="yui-main"> <!-- Main Content Start -->
+        <div class="yui-b">
+          <div class="yui-g">
+      
+            <%= "<div class=\"admin-message\">#{message[:notice]}</div>" if message[:notice] && !message[:notice].blank? %>
+            
+            <%= catch_content :for_layout %>
+            
+          </div>
+        </div>
+      </div> <!-- Main Content End -->
+      
+      <div class="yui-b"> <!-- Main Sidebar Start -->
+
+        <div class="sidebox">
+          <% 
+            if session[:user]
+          -%>
+          <h3>Posts</h3>
+          <ul class="admin-list">
+            <li><%= link_to "New Post", url(:new_admin_node) %></li>
+            <li><%= link_to "List All", url(:admin_nodes) %></li>
+          </ul>
+          <h3>Comments</h3>
+          <ul class="admin-list">
+            <li><%= link_to "List All", url(:admin_comments) %></li>
+            <li><%= link_to "List All Spam", url(:spam_admin_comments) %></li>
+          </ul>
+          <h3>Bookmarks</h3>
+          <ul class="admin-list">
+            <li><%= link_to "New Bookmark", url(:new_admin_bookmark) %></li>
+            <li><%= link_to "List All", url(:admin_bookmarks) %></li>
+          </ul>
+          <% 
+            end 
+          -%>
+          <h3>Misc</h3>
+          <ul class="admin-list">
+            <li><%= link_to "Log Out", url(:logout) %></li>
+            <li><%= link_to "Home", url(:home) %></li>
+          </ul>
+        </div>
+
+      </div> <!-- Main Sidebar End -->
+      
+
+    </div>
+
+    
+    <div id="ft">
+    </div>
+
+  </div>
+</body>
+</html>

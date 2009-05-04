@@ -1,0 +1,21 @@
+<div id="nodes">
+  <% if @nodes.count == 0 -%>
+    <div class="node">
+      <h2>Not Found</h2>
+      Sorry. I can't seem to find what you're looking for.
+    </div>
+  <% else -%>
+    <%= partial(:node, :with => @nodes) %>
+
+    <%= paginate(
+      @current_page, 
+      @page_count, 
+      :default_css => false, 
+      :outer_window => 5, 
+      :next_label => "Older Posts &raquo;", 
+      :prev_label => "&laquo; Newer Posts"
+      )
+    %>
+
+  <% end -%>
+</div>

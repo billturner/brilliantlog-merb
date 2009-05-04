@@ -1,0 +1,41 @@
+<div id="nodes">
+  <%= partial(:node, :with => @node) %>
+</div>
+<% if @node.allow_comments? -%>
+  <div id="comment_section">
+    <h3 id="comments">Comments</h3>
+    <ol id="comment_list" class="comment-list">
+    <% if @node.comments.length > 0 -%>
+      <%= partial("comments/comment", :with => @node.comments) %>
+    <% else -%>
+      <li id="no-comment"><div class="cbody">No comments yet.</div></li>
+    <% end -%>
+    </ol>
+
+    <div id="comment_message"></div>
+  
+    <h3 id="respond">Add a Comment</h3>
+
+    <%= form_for :comment, :action => url(:new_comment, @comment) do %>
+      <%= hidden_field :node_id, :value => @node.id %>
+      <%= partial("comments/form") %>
+    <% end =%>
+  </div>
+  
+<script type="text/javascript">
+<!--
+  $(document).ready(function() {
+    $("#add_comment_button").click(function() {
+      $(this).attr("disabled", true);
+      $('#comment_spinner').show();
+      $('#comment_cancel').hide();
+      post_comment();
+      $(this).removeAttr("disabled");
+      $('#comment_spinner').hide(); 
+      $('#comment_cancel').show();
+      return false;
+    });
+  });
+// -->
+</script>
+<% end -%>

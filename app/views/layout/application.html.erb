@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+  <head>
+    <title><% if (thrown_content? :title ) then -%><%= h(catch_content(:title)) %> | <% end -%>Weblog Name</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <%= css_include_tag 'site' %>
+    <%= js_include_tag 'jquery', 'jquery-ui', 'application' %>
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed (full posts)" href="<%= "#{request.protocol}://#{request.host}#{url(:feed_nodes, :format => :rss)}" %>" />
+    <meta name="robots" content="index, follow" />
+  </head>
+  <body id="doc2" class="yui-t6">
+
+    <div id="hd">
+      
+      <h1><%= link_to "<span>Weblog Name</span>", url(:home), { :rel => 'home bookmark', :title => ''} %></h1>
+      
+    </div>
+
+    <div id="bd">
+      
+      <div id="yui-main"> <!-- Main Content Start -->
+        <div class="yui-b">
+          <div class="yui-g">
+      
+            <%= catch_content :for_layout %>
+            
+          </div>
+        </div>
+      </div> <!-- Main Content End -->
+      
+      <div class="yui-b"> <!-- Main Sidebar Start -->
+
+        <div class="sidebox vcard">
+          <h3>Welcome!</h3>
+          <p>This is a weblog.</p>
+        </div>
+        
+        <div class="yui-g">
+
+          <div class="yui-u first sidebar" id="left_sidebar">
+            
+            <div class="sidebox">
+              <h3>Friendly Links</h3>
+              <ul>
+                <%
+                  #cache("bookmarks") do
+                    Bookmark.all(:order => [:name.asc]).each do |b| 
+                -%>
+                  <li><%= link_to b.name, b.url, { :rel => b.rel, :title => b.name } %></li>
+                <%
+                    end
+                  #end
+                -%>
+              </ul>
+            </div>
+            
+          </div>
+          
+          <div class="yui-u sidebar" id="left_sidebar">
+            
+            <div class="sidebox">
+              <h3>Contact</h3>
+              <ul class="listing">
+                <li>Email: <a rel="nofollow" href="mailto:emailaddress@gmail.com"></a></li>
+              </ul>
+            </div>
+
+            <div class="sidebox">
+              <h3>Subscribe</h3>
+              <p>
+                <span class="feedlink"><%= link_to('Full-entry RSS', url(:feed_nodes, :format => :rss), { :title => 'Link to RSS 2.0', :class => 'with_icon' }) %></span><br />
+                <span class="feedlink"><%= link_to('Comments RSS', url(:feed_comments, :format => :rss), { :title => 'Link to RSS 2.0 (comments)', :class => 'with_icon' }) %></span>
+              </p>
+              <p>What does RSS and syndication mean? <a href="http://www.google.com/support/feedburner/bin/answer.py?answer=79408">Find out here</a>.</p>
+            </div>
+            
+            <div class="sidebox">
+              <h3>About the Site</h3>
+              <p>The software that runs this weblog was written in <a href="http://merbivore.com/">Merb</a>.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div> <!-- Main Sidebar End -->
+      
+
+    </div>
+
+    
+    <div id="ft">
+    </div>
+
+  </div>
+</body>
+</html>

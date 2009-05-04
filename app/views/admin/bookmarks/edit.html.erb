@@ -1,0 +1,8 @@
+<h2 class="admin-header">Edit Bookmark: <%= @bookmark.name %></h2>
+
+<%= error_messages_for @bookmark %>
+
+<%= form_for :bookmark, :action => url(:admin_bookmark, @bookmark), :method => :put, :class => 'admin-form' do -%>
+  <%= partial :form %>
+  <%= submit 'Save Changes' %> or <%= link_to 'Cancel', url(:admin_bookmarks) %>
+<% end =%>

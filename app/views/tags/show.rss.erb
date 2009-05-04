@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title><%= [catch_content(:title), "Weblog Name"].join " | " %></title>
+    <link>http://weblogurl.com/</link>
+    <copyright>Copyright (c) YOUR NAME</copyright>
+    <language>en-US</language>
+    <pubDate><%= rfc822_date(@tag.nodes.first.published_at) =%></pubDate>
+    <lastBuildDate><%= rfc822_date(@tag.nodes.first.published_at) =%></lastBuildDate>
+  <% @tag.nodes.each do |n| -%>
+    <item>
+      <title><%= n.title %></title>
+      <description><%= h(markdown(n.content)) =%></description>
+      <pubDate><%= rfc822_date(n.published_at) =%></pubDate>
+      <link><%= "#{request.protocol}://#{request.host}" + url(:node, n) %></link>
+      <guid isPermaLink="false"><%= n.id.to_s + "@#{request.protocol}://#{request.host}/" %></guid>
+      <% n.tags.each do |t| -%>
+        <category><%= h t.name %></category>
+      <% end -%>
+    </item>
+  <% end -%>
+  </channel>
+</rss>

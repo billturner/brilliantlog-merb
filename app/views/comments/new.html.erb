@@ -1,0 +1,6 @@
+<% if !@errors.blank? -%>
+  <strong>There was a problem with your comment:</strong>
+  <%= @errors %>
+<% else -%>
+  <%= partial("comment", :with => @comment) %>
+<% end -%>

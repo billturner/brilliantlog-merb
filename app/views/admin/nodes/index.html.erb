@@ -1,0 +1,25 @@
+<h2 class="admin-header">All Posts</h2>
+<table class="admin" cellspacing="0">
+  <tr>
+    <th class="cntr">ID</th>
+    <th>Title</th>
+    <th>Created</th>
+    <th>Published</th>
+    <!-- <th class="cntr">P?</th> -->
+    <th class="cntr">C?</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  <%= partial(:node, :with => @nodes) %>
+</table>
+
+  <%= paginate(
+    @current_page, 
+    @page_count, 
+    :default_css => false, 
+    :outer_window => 5, 
+    :next_label => "Older Posts &raquo;", 
+    :prev_label => "&laquo; Newer Posts"
+    )
+  %>

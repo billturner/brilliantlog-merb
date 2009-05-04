@@ -1,0 +1,8 @@
+<h2 class="admin-header">Edit Comment</h2>
+
+<%= error_messages_for @comment %>
+
+<%= form_for :comment, :action => url(:admin_comment, @comment), :method => :put, :class => 'admin-form' do -%>
+  <%= partial :form %>
+  <%= submit 'Save Changes' %> or <%= link_to 'Cancel', url(:admin_comments) %>
+<% end =%>

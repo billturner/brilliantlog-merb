@@ -1,0 +1,31 @@
+<h2 class="admin-header">All Spam Comments</h2>
+
+<div style="text-align: right; padding: 4px;">
+  Quick Actions: 
+  <%= link_to 'Delete All Spam', url(:delete_spam_admin_comments), { :onclick => "return confirm('Are you sure you want to delete all the spam comments?')" } %>
+</div>
+<table class="admin">
+  <tr>
+    <th class="cntr">ID</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Date Added</th>
+    <th class="cntr">A?</th>
+    <th class="cntr">S?</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  <%= partial(:comment, :with => @comments) %>
+</table>
+
+<%= paginate(
+  @current_page, 
+  @page_count, 
+  :default_css => false, 
+  :outer_window => 5, 
+  :next_label => "Older Comments &raquo;", 
+  :prev_label => "&laquo; Newer Comments"
+  )
+%>
+

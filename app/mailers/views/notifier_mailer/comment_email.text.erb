@@ -1,0 +1,9 @@
+You have a new, non-spam comment on the '<%= @node.title %>' post:
+
+From: <%= "#{@comment.name} / #{@comment.email}" %>
+<%= @comment.url if !@comment.url.blank? -%>
+
+Comment:
+<%= @comment.comment %>
+
+Link: <%= "http://brilliantcorners.org" + url(:node, @node, :fragment => "comment-#{@comment.id}") %>

@@ -1,0 +1,11 @@
+<h2 class="admin-header">Edit Node: <%= @node.title %></h2>
+
+<%= error_messages_for @node %>
+
+<%= form_for :node, :action => url(:admin_node, @node), :method => :put, :class => 'admin-form' do -%>
+
+  <%= partial :form %>
+
+  <%= submit 'Save Changes' %> or <%= link_to 'Cancel', url(:admin_nodes) %>
+
+<% end =%>

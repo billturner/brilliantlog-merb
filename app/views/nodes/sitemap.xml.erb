@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc><%= "#{request.protocol}://#{request.host}/" %></loc>
+    <lastmod><%= w3c_date(Time.now) =%></lastmod>
+    <changefreq>daily</changefreq>
+  </url>
+<% @nodes.each do |node| -%>
+  <url>
+    <loc><%= "#{request.protocol}://#{request.host}" + url(:node, node) %></loc>
+    <lastmod><%= w3c_date(node.published_at) =%></lastmod>
+    <changefreq>weekly</changefreq>
+  </url>
+<% end -%>
+<%
+  @tags.each do |tag|
+    if tag.nodes.count > 0
+-%>
+  <url>
+    <loc><%= "#{request.protocol}://#{request.host}" + url(:tag, tag) %></loc>
+    <lastmod><%= w3c_date(tag.nodes.first.published_at) =%></lastmod>
+    <changefreq>weekly</changefreq>
+  </url>
+<%
+    end
+  end
+-%>
+</urlset>

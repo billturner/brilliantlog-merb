@@ -1,0 +1,7 @@
+<% if comment.approved? -%>
+  <li class="single-comment" id="comment-<%= comment.id %>"><span class="cnamedate"><strong>&raquo; <% if !comment.url.blank? -%><a href="<%= comment.url %>"><% end -%><%= comment.name %><% if !comment.url.blank? -%></a><% end -%></strong> said on <%= link_to comment.created_at.strftime("%B %d, %Y"), url(:node, @node, :fragment => "comment-#{comment.id}"), { :title => 'Permanent link to this comment' } %>:</span>
+  <div class="cbody">
+    <%= markdown(h comment.comment) =%>
+  </div>
+  </li>
+<% end -%>

@@ -1,0 +1,9 @@
+<h2 class="admin-header">Add a New Node</h2>
+
+<%= error_messages_for @node %>
+
+<%= form_for :node, :action => url(:admin_nodes), :method => :post, :class => 'admin-form' do -%>
+  <%= hidden_field :user_id, :value => session[:user] %>
+  <%= partial :form %>
+  <%= submit 'Save New Node' %> or <%= link_to 'Cancel', url(:admin_nodes) %>
+<% end =%>

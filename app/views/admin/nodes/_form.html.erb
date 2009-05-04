@@ -1,0 +1,33 @@
+<div class="field">
+  <%= label 'Title', :for => "node_title" %><br />
+  <%= text_field :title, :size => 50 %>
+</div>
+<div class="field">
+  <%= label 'Node Body', :for => "node_content" %> <div class="preview-link">[<a href="#" onclick="toggle_preview(); return false;">preview</a>]</div><br />
+  <%= text_area :content, :cols => 55, :rows => 15 %>
+  <div id="node_preview" style="display: none;"></div>
+</div>
+<div class="field">
+  <%= label 'Tags', :for => "node_taglist" %><br />
+  <%= text_field :taglist, :size => 50, :value => @node.tags.map{ |tag| tag.name }.join(", ") %>
+</div>
+<div class="field">
+  <%= label 'Publish?', :for => "node_published" %> <%= check_box :published %>
+</div>
+<div class="field">
+  <%= label 'Allow Comments?', :for => "node_allow_comments" %> <%= check_box :allow_comments %>
+</div>
+<% if params[:action] == 'edit' -%>
+  <div class="field">
+    Created: <%= @node.created_at.strftime("%b %d, %Y at %I:%M%p") %>
+  </div>
+  <div class="field">
+    Updated: <%= @node.updated_at.strftime("%b %d, %Y at %I:%M%p") %>
+  </div>
+  <% if !@node.published_at.blank? %>
+    <div class="field">
+      Published: <%= @node.published_at.strftime("%b %d, %Y at %I:%M%p") %>
+      <%= hidden_field :published_at %>
+    </div>
+  <% end -%>
+<% end -%>

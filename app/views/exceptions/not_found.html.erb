@@ -1,0 +1,12 @@
+<% throw_content :title, '(404) Not Found' %>
+<div id="nodes">
+  <div class="node" id="node_not_found">
+    <h2 class="title">(404) Not Found</h2>
+    <div class="content">
+      <p>Sorry, but I can't seem to find what you're looking for.</p>
+      <p>I've adjusted and rebuilt and redesigned and restarted this weblog so many times, that something was bound to get lost in the cracks. It seems you found your way into one of those cracks.</p>
+      <p>I'm still in the process of cleaning up the archives and working out a decent way to find everything. In the meantime, <%= link_to "here's a page", url(:archive_nodes), { :rel => "bookmark", :title => "An archive listing of all posts."} %> containing all the posts currently on the site where you <em>may</em> find what you came looking for.</p>
+      <p>I apologize for the inconvenience!</p>
+    </div>
+  </div>
+</div>

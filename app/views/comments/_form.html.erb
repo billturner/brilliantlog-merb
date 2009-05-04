@@ -1,0 +1,23 @@
+<div class="comment-form">
+  <p>
+    <%= text_field :name, :size => 25, :value => params['name'] %> <%= label 'Name', :for => "comment_name" =%>
+  </p>
+  <p>
+    <%= text_field :email, :size => 25, :value => params['email'] %> <%= label 'Email', :for => "comment_email" =%>
+  </p>
+  <p>
+    <%= text_field :url, :size => 25, :value => params['url'] %> <%= label 'Website URL', :for => "comment_url" =%>
+  </p>
+  <p>
+    <%= text_area :comment, :cols => 35, :rows => 10 %>
+  </p>
+  <p>
+    <em>Your name, a valid email address, and a comment are required. Your email address will <strong>not</strong> be displayed or shared. </em>
+  </p>
+  <p>
+    <%= submit 'Submit', {:id => 'add_comment_button'} %>
+    <span id="comment_spinner" style="display: none;"><%= image_tag("spinningwheel.gif", :size => "16x16", :alt => "Activity Indicator") %></span>
+    <span id="comment_cancel">or <%= link_to 'Cancel', url(:home) %></span>
+  </p>
+
+</div>

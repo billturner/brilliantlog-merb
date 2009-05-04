@@ -1,0 +1,118 @@
+/* ADMIN STYLES */
+h2.admin-header {
+  font-weight: bold;
+  font-size: 1.4em;
+  margin: 10px 0;
+}
+div.admin-message {
+  margin: 5px 0;
+  padding: 5px;
+  font-weight: bold;
+  border: 1px dotted orange;
+}
+table.admin {
+  width: 100%;
+  font-family: Helvetica, Arial, sans-serif;
+}
+  table.admin tr th {
+    padding: 10px 3px 2px 3px;
+    font-size: .9em;
+    font-weight: bold;
+    background: #333;
+    color: #fff;
+  }
+  table.admin tr td {
+    padding: 3px 2px 2px 2px;
+    font-size: .8em;
+    border-bottom: 1px solid #aaa;
+  }
+  table.admin tr.even {
+    background: #ddd;
+  }
+  table.admin tr td.left-edge {
+    border-left: 1px solid #aaa;
+  }
+  table.admin tr td.right-edge {
+    border-right: 1px solid #aaa;
+  }
+.admin-form p {
+  margin: 10px 0;
+}
+/* NEW ADMIN CSS */
+.admin-form {
+  
+}
+  .admin-form .field {
+    margin: 10px 0;
+  }
+    .admin-form .field label {
+      font-weight: bold;
+    }
+  .admin-form select, .admin-form input[type="text"], .admin-form textarea {
+    font-size: 1.0em;
+    margin: 4px;
+  }
+  .admin-form input[type="text"], .admin-form textarea {
+    width: 450px;
+  }
+    .admin-form textarea {
+      height: 350px;
+    }
+  .admin-form .field .preview-link {
+    display: inline;
+    margin-left: 330px;
+  }
+  .admin-form .field #node_preview {
+    background: #DCDCDC;
+    border: 1px solid #666;
+    width: 430px;
+    padding: 5px 10px;
+    height: 350px;
+    overflow: scroll;
+  }
+
+.admin-icon {
+  margin: 0 3px;
+}
+#admin-menu {
+  text-align: center;
+  font-family: 'Lucida Grande', 'Gill Sans';
+}
+  #admin-menu h3 {
+    text-transform: uppercase;
+    font-size: 1.1em;
+    background: #333;
+    color: #fff;
+    padding: 3px 0;
+  }
+  #admin-menu ul {
+    list-style-type: none;
+  }
+    #admin-menu ul li {
+      background: #ddd;
+      font-size: .9em;
+      padding: 4px 0;
+      border-left: 1px solid #aaa;
+      border-right: 1px solid #aaa;
+      border-bottom: 1px solid #aaa;
+    }
+.admin-form p {
+  margin: 10px 0;
+}
+
+div.error {
+  border: 1px solid red;
+  padding: 5px;
+}
+  div.error h2 {
+    font-size: 1.1em;
+  }
+  div.error ul {
+    margin-left: 25px;
+    list-style-type: disc;
+  }
+    div.error ul li {
+      font-size: 1.0em;
+      line-height: 1.5;
+      list-style-type: disc;
+    }

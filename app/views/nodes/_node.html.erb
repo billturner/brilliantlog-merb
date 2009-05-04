@@ -1,0 +1,20 @@
+<div class="node" id="node_<%= node.id %>">
+  <h2 class="title"<%= " onmouseover=\"show_comment_link('#{node.id}');\" onmouseout=\"hide_comment_link('#{node.id}');\"" if params[:controller] == 'tags' || (params[:action] != "show" && params[:controller] == 'nodes') && node.allow_comments? %>>
+    <%= link_to node.title, url(:node, node), { :title => 'Permanent link to this entry', :rel => 'bookmark' } %>
+    <% if params[:controller] == 'tags' || (params[:action] != "show" && params[:controller] == 'nodes') -%>
+      <% if node.allow_comments? -%>
+        <span id="comment_link_<%= node.id %>" class="comment-link" style="display: none;">
+          <% if node.comments.length > 0 -%>
+            <%= link_to "Comments (#{node.comments.length})", url(:node, node, :fragment => 'comments') , { :title => 'View comments on this post.'} %>
+          <% else -%>
+            <%= link_to "Comment", url(:node, node, :fragment => 'respond'), { :title => 'Add your comment to this post.'} %>
+          <% end -%>
+        </span>
+      <% end -%>
+    <% end -%>
+  </h2>
+  <div class="subtitle">Posted <%= node.published_at.strftime("%b %d, %Y") %> in <% if node.tags.length > 0 -%><%= tag_list(node.tags) =%><% end -%></div>
+  <div class="content">
+    <%= markdown(node.content) =%>
+  </div>
+</div>

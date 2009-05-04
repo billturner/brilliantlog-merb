@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Weblog Name weblog comments</title>
+    <link>http://weblogurl.com/</link>
+    <copyright>Copyright (c) YOUR NAME</copyright>
+    <language>en-US</language>
+    <pubDate><%= rfc822_date(@comments.first.created_at) =%></pubDate>
+    <lastBuildDate><%= rfc822_date(@comments.first.created_at) =%></lastBuildDate>
+    <% @comments.each do |c| -%>
+      <item>
+        <title>Comment on '<%= h c.node.title %>'</title>
+        <description><%= h(markdown(c.comment)) =%></description>
+        <pubDate><%= rfc822_date(c.created_at) =%></pubDate>
+        <link><%= "#{request.protocol}://#{request.host}" + url(:node, c.node, :fragment => "comment-#{c.id}") %></link>
+        <guid isPermaLink="false"><%= "comment-#{c.id}@#{request.protocol}://#{request.host}/" %></guid>
+      </item>
+    <% end -%>
+  </channel>
+</rss>

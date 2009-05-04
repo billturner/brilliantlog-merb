@@ -1,0 +1,11 @@
+<tr id="admin_node_<%= node.id %>">
+  <td class="cntr left-edge"><%= node.id %></td>
+  <td><%= node.title %></td>
+  <td><%= node.created_at.strftime("%d %b %Y") %></td>
+  <td><%= node.published? ? node.published_at.strftime("%d %b %Y") : 'n/a' %></td>
+  <!-- <td class="cntr"><% if node.published? -%><%= image_tag("/images/icon_check_10.png", :size => "10x10", :class => 'admin-icon') %><% end -%></td> -->
+  <td class="cntr"><% if node.allow_comments? -%><%= image_tag("/images/icon_check_10.png", :size => "10x10", :class => 'admin-icon') %><% end -%></td>
+  <td class="cntr"><%= link_to image_tag("/images/icon_view_10.png", :size => "10x10", :class => 'admin-icon'), url(:node, node), { :title => 'See the post on the site.' } %>
+  <td class="cntr"><%= link_to image_tag("/images/icon_edit_10.png", :size => "10x10", :class => 'admin-icon'), url(:edit_admin_node, node), { :title => 'Edit this post.' } %>
+  <td class="cntr right-edge"><%= link_to image_tag("/images/icon_delete_10.png", :size => "10x10", :class => 'admin-icon'), url(:delete_admin_node, node), { :title => 'Delete this post.', :onclick => "return confirm('Are you sure you want to delete this post?')", :method => :delete } %>
+</tr>
